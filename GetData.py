@@ -7,6 +7,7 @@ def search_stock_info(stock_name, site, after, before, number_of_hits):
     search_string = stock_name + " site:" + site + " after:" + after + " before:" + before
 
     driver = webdriver.Chrome('chromedriver')
+    driver.set_window_position(-1000, 0)
 
     for i in range(number_of_hits):
         driver.get("https://www.google.com/search?q=" + search_string + "&start=" + str(i))
