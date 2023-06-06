@@ -1,6 +1,7 @@
 from selenium import webdriver
 
-from YahooFinance.HelperMethodsYahooFinance import *
+from src.SemanticAnalysis import *
+from src.YahooFinance.HelperMethodsYahooFinance import *
 
 
 def search_stock_info(stock_name, site, after, before, number_of_hits):
@@ -20,10 +21,14 @@ def search_stock_info(stock_name, site, after, before, number_of_hits):
         first_hit = driver.find_element(By.CLASS_NAME, 'MjjYud')
         first_hit.click()
 
-        # Get data based on website
+        # Get text data based on website
+        text_data = ""
         if site == "https://finance.yahoo.com/":
-            click_agree_button(driver)
-            click_show_more_button(driver)
+            click_agree_button_yahoo_finance(driver)
+            click_show_more_button_yahoo_finance(driver)
+            text_data = get_data_yahoo_finance(driver)
+
+        evaluate_text_semantics(text_data)
 
     driver.quit()
 
@@ -34,7 +39,6 @@ def main():
     after = "2021-01-02"
     before = "2021-02-02"
     number_of_hits = 1
-
     search_stock_info(stock_name, site, after, before, number_of_hits)
 
 
