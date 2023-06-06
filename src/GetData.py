@@ -35,11 +35,11 @@ def search_stock_info(stock_name, site, after, before, number_of_hits):
 
 def main():
     stock_name = "AAPL"
-    site = "https://finance.yahoo.com/"
+    source = "https://finance.yahoo.com/"
     after = "2021-01-02"
     before = "2021-02-02"
     number_of_hits = 1
-    search_stock_info(stock_name, site, after, before, number_of_hits)
+    search_stock_info(stock_name, source, after, before, number_of_hits)
 
 
 if __name__ == "__main__":
