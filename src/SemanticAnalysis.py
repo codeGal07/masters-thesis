@@ -11,8 +11,9 @@ def evaluate_text_semantics(text):
     # by the TextBlob library when the TextBlob object is created.
 
     # preprocess text for semantic analysis
-    text = remove_stop_words(text)
-    text = lemmatization(text)
+    # todo not sure if polarity is more accurate with preprocessing
+    # text = remove_stop_words(text)
+    # text = lemmatization(text)
 
     # perform semantic analysis
     polarity = get_polarity(text)
@@ -31,11 +32,11 @@ def remove_stop_words(text):
     return filtered_text
 
 
-def lemmatization(text):
+def lemmatisation(text):
     blob = TextBlob(text)
-    lemmatized_text = " ".join([Word(word).lemmatize() for word in blob.words])
+    lemmatised_text = " ".join([Word(word).lemmatize() for word in blob.words])
 
-    return lemmatized_text
+    return lemmatised_text
 
 
 def get_polarity(text):
