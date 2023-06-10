@@ -6,7 +6,7 @@ def get_SP500_data():
 
     # Data in my master's thesis was extracted on date 9.6.2023
 
-    text_file = open("html_sp500.txt", "r")
+    text_file = open("data/html_sp500.txt", "r")
     html = text_file.read()
 
     bs = BeautifulSoup(html, features="lxml")
