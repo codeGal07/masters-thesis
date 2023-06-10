@@ -1,17 +1,24 @@
 from selenium import webdriver
 import pandas_market_calendars as mcal
+import pandas as pd
 
 from src.SP500DataScraper import get_SP500_data
 from src.SemanticAnalysis import *
 from src.WriteFile import *
-from src.yahooFinance.HelperMethodsYahooFinance import *
+from src.YahooFinance.HelperMethodsYahooFinance import *
 
 
-def go_through_all_dates():
-    trading_dates = get_trading_dates('2023-01-01', '2023-02-01')
+def get_all_data(date_from, date_to, number_of_hits, file_data_path):
+    trading_dates = get_trading_dates(date_from, date_to)
+    stock_symbols = get_all_stock_symbols()
+    sources = get_specify_sources()
 
-    for date in trading_dates():
-        pass
+    for i in range(len(trading_dates) - 1):
+        before = trading_dates[i].strftime("%Y-%m-%d")
+        after = trading_dates[i + 1].strftime("%Y-%m-%d")
+        for stock_name in stock_symbols:
+            for source in sources:
+                search_stock_info(stock_name, source, before, after, number_of_hits, file_data_path)
 
 
 def get_trading_dates(start_date, end_date):
@@ -21,14 +28,24 @@ def get_trading_dates(start_date, end_date):
 
     # Filter out non-trading dates
     trading_dates = dates.index.normalize()
+
     return trading_dates
 
-def go_through_all_stocks():
-    pass
+
+def get_all_stock_symbols():
+    # Read the CSV file into a pandas DataFrame
+    data = pd.read_csv('data/sp500_data.csv')
+    stock_symbols = data['Symbol']
+
+    return stock_symbols
 
 
-def go_through_all_sources():
-    pass
+def get_specify_sources():
+    # TODO add more sources
+    # sources = ["https://finance.yahoo.com/", "https://www.wsj.com/"]
+    sources = ["https://finance.yahoo.com/"]
+
+    return sources
 
 
 def search_stock_info(stock_name, source, after, before, number_of_hits, file_data_path):
@@ -57,25 +74,21 @@ def search_stock_info(stock_name, source, after, before, number_of_hits, file_da
 
         polarity = evaluate_text_semantics(text_data)
 
-        # todo include real date
-        write_data_into_file("2020-01-01", stock_name, polarity, source, file_data_path)
+        write_data_into_file(before, stock_name, polarity, source, file_data_path)
 
     driver.quit()
 
 
 def main():
-    stock_name = "AAPL"
-    source = "https://finance.yahoo.com/"
-    after = "2021-01-02"
-    before = "2021-02-02"
+    date_from = '2023-02-01'
+    date_to = '2023-03-01'
     number_of_hits = 1
     file_data_path = "data/stock_info.txt"
 
     # Only needed once to get SP500 data into CSV file
     # get_SP500_data()
 
-    go_through_all_dates()
-    # search_stock_info(stock_name, source, after, before, number_of_hits, file_data_path)
+    get_all_data(date_from, date_to, number_of_hits, file_data_path)
 
 
 if __name__ == "__main__":
