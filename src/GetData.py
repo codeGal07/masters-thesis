@@ -1,3 +1,5 @@
+from datetime import time
+
 from selenium import webdriver
 import pandas_market_calendars as mcal
 import pandas as pd
