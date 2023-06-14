@@ -8,9 +8,11 @@ from src.SP500DataScraper import get_SP500_data
 from src.SemanticAnalysis import *
 from src.WriteFile import *
 from src.YahooFinance.HelperMethodsYahooFinance import *
+from selenium.webdriver.firefox.firefox_profile import FirefoxProfile
+from selenium.webdriver.firefox.options import Options
 
 
-def get_all_data(date_from, date_to, number_of_hits, file_data_path, headless):
+def get_all_data(date_from, date_to, number_of_hits, file_data_path, driver):
     trading_dates = get_trading_dates(date_from, date_to)
     stock_symbols = get_all_stock_symbols()
     sources = get_specify_sources()
@@ -20,7 +22,7 @@ def get_all_data(date_from, date_to, number_of_hits, file_data_path, headless):
         after = trading_dates[i + 1].strftime("%Y-%m-%d")
         for stock_name in stock_symbols:
             for source in sources:
-                search_stock_info(stock_name, source, before, after, number_of_hits, file_data_path, headless)
+                search_stock_info(stock_name, source, before, after, number_of_hits, file_data_path, driver)
 
 
 def get_trading_dates(start_date, end_date):
@@ -51,56 +53,71 @@ def get_specify_sources():
     return sources
 
 
-def search_stock_info(stock_name, source, after, before, number_of_hits, file_data_path, headless):
+def search_stock_info(stock_name, source, after, before, number_of_hits, file_data_path, driver):
     search_string = stock_name + " site:" + source + " after:" + after + " before:" + before
-
-    if headless:
-        options = webdriver.ChromeOptions()
-        options.add_argument('--headless')
-        driver = webdriver.Chrome('chromedriver', options=options)
-    else:
-        driver = webdriver.Chrome('chromedriver')
-        driver.set_window_position(-1000, 0)
 
     for i in range(number_of_hits):
         driver.get("https://www.google.com/search?q=" + search_string + "&start=" + str(i))
 
         if i == 0:
+            #todo.. tuki pade pri microsoftu
             agree_button_google = driver.find_element(By.ID, 'L2AGLb')
             agree_button_google.click()
-            time.sleep(5)
 
         # Click the first hit on Google
         first_hit = driver.find_element(By.CLASS_NAME, 'MjjYud')
         first_hit.click()
-        time.sleep(5)
 
         # Get text data based on website
         text_data = ""
+        title_data = ""
         if source == "https://finance.yahoo.com/":
             click_agree_button_yahoo_finance(driver)
+            title_data = get_title_yahoo_finance(driver)
             click_show_more_button_yahoo_finance(driver)
             text_data = get_data_yahoo_finance(driver)
 
         polarity = evaluate_text_semantics(text_data)
 
         current_url = driver.current_url
-        write_data_into_file(before, stock_name, polarity, source, current_url, file_data_path)
+        write_data_into_file(before, stock_name, polarity, source, title_data, current_url, file_data_path)
 
-    driver.quit()
+def create_chrome_driver(headless):
+    if headless:
+        options = webdriver.ChromeOptions()
+        options.add_argument('--headless')
+        driver = webdriver.Chrome('chromedriver', options=options)
+        return driver
+    else:
+        driver = webdriver.Chrome('chromedriver')
+        driver.set_window_position(-1000, 0)
+        return driver
+def create_firefox_driver(headless):
+    if headless:
+        #todo
+        pass
+    else:
+        # Create the WebDriver instance
+        driver = webdriver.Firefox()
+        driver.set_window_position(-1000, 0)
+        return driver
 
 
 def main():
     date_from = '2023-02-07'
     date_to = '2023-03-01'
-    number_of_hits = 5
+    number_of_hits = 1
     file_data_path = "data/stock_info.txt"
-    headless = True
+    headless = False
 
     # Only needed once to get SP500 data into CSV file
     # get_SP500_data()
+
+    # driver = create_firefox_driver(headless)
+    driver = create_chrome_driver(headless)
     create_file_if_not_exists(file_data_path)
-    get_all_data(date_from, date_to, number_of_hits, file_data_path, headless)
+    get_all_data(date_from, date_to, number_of_hits, file_data_path, driver)
+    driver.quit()
 
 
 if __name__ == "__main__":
