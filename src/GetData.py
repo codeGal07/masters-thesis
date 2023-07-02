@@ -3,13 +3,21 @@ from datetime import time
 from selenium import webdriver
 import pandas_market_calendars as mcal
 import pandas as pd
+import sys
+from selenium.webdriver import ActionChains
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.common.keys import Keys
+from webdriver_manager.chrome import ChromeDriverManager
 
 from src.SP500DataScraper import get_SP500_data
 from src.SemanticAnalysis import *
 from src.WriteFile import *
 from src.YahooFinance.HelperMethodsYahooFinance import *
+from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.firefox.firefox_profile import FirefoxProfile
-from selenium.webdriver.firefox.options import Options
+
+
+# from selenium.webdriver.firefox.options import Options
 
 
 def get_all_data(date_from, date_to, number_of_hits, file_data_path, driver):
@@ -22,7 +30,7 @@ def get_all_data(date_from, date_to, number_of_hits, file_data_path, driver):
         after = trading_dates[i + 1].strftime("%Y-%m-%d")
         for stock_name in stock_symbols:
             for source in sources:
-                search_stock_info(stock_name, source, before, after, number_of_hits, file_data_path, driver)
+                search_stock_info(stock_name, source, before, after, number_of_hits, file_data_path, driver, i)
 
 
 def get_trading_dates(start_date, end_date):
@@ -53,60 +61,95 @@ def get_specify_sources():
     return sources
 
 
-def search_stock_info(stock_name, source, after, before, number_of_hits, file_data_path, driver):
+def check_link_starts_with_source(source, lnk):
+    if source in lnk:
+        return True
+    else:
+        return False
+
+
+def search_stock_info(stock_name, source, after, before, number_of_hits, file_data_path, driver, i):
     search_string = stock_name + " site:" + source + " after:" + after + " before:" + before
 
-    for i in range(number_of_hits):
-        driver.get("https://www.google.com/search?q=" + search_string + "&start=" + str(i))
+    driver.get("https://www.google.com/search?q=" + search_string)
 
-        if i == 0:
-            #todo.. tuki pade pri microsoftu
-            agree_button_google = driver.find_element(By.ID, 'L2AGLb')
-            agree_button_google.click()
+    # checks if cought being a bot
+    try:
+        driver.find_element(By.NAME, 'Our systems have detected unusual traffic from your computer network')
+        sys.exit("CAUGHT BEING A BOT")
+    except:
+        pass
 
-        # Click the first hit on Google
-        first_hit = driver.find_element(By.CLASS_NAME, 'MjjYud')
-        first_hit.click()
+    try:
 
-        # Get text data based on website
-        text_data = ""
-        title_data = ""
-        if source == "https://finance.yahoo.com/":
-            click_agree_button_yahoo_finance(driver)
-            title_data = get_title_yahoo_finance(driver)
-            click_show_more_button_yahoo_finance(driver)
-            text_data = get_data_yahoo_finance(driver)
+        agree_button_google = driver.find_element(By.ID, 'L2AGLb')
+        agree_button_google.click()
+    except:
+        pass
 
-        polarity = evaluate_text_semantics(text_data)
+    lnks = driver.find_elements(By.TAG_NAME, "a")
+    count_hits = 0
 
-        current_url = driver.current_url
-        write_data_into_file(before, stock_name, polarity, source, title_data, current_url, file_data_path)
+    # Get links from Google search page
+    myLnks = []
+    for lnk in lnks:
+        print(lnk.get_attribute("href"))
+        myLnks.append(lnk.get_attribute("href"))
+
+    for news_link in myLnks:
+        if count_hits == number_of_hits:
+            break
+        if news_link is not None and news_link.startswith(source):
+            count_hits += 1
+            # Go to yahoo news
+            driver.get(news_link)
+            # Get text data based on website
+            text_data = ""
+            title_data = ""
+            if source == "https://finance.yahoo.com/":
+                click_agree_button_yahoo_finance(driver)
+                title_data = get_title_yahoo_finance(driver)
+                click_show_more_button_yahoo_finance(driver)
+                text_data = get_data_yahoo_finance(driver)
+
+            polarity = evaluate_text_semantics(text_data)
+
+            current_url = driver.current_url
+            write_data_into_file(before, stock_name, polarity, source, title_data, current_url, file_data_path,
+                                 text_data)
+
 
 def create_chrome_driver(headless):
     if headless:
         options = webdriver.ChromeOptions()
         options.add_argument('--headless')
-        driver = webdriver.Chrome('chromedriver', options=options)
+        path = "/Users/sabina.matjasic/Documents/googlechrome.dmg"
+        driver = webdriver.Chrome(executable_path=path, options=options)
         return driver
     else:
-        driver = webdriver.Chrome('chromedriver')
-        driver.set_window_position(-1000, 0)
+        driver = webdriver.Chrome(executable_path='/opt/homebrew/Caskroom/chromedriver/102.0.5005.61/chromedriver')
+        driver.set_window_position(-100, 0)
+        driver.maximize_window()
         return driver
+
+
 def create_firefox_driver(headless):
+    pass
     if headless:
-        #todo
+        # todo
         pass
     else:
         # Create the WebDriver instance
         driver = webdriver.Firefox()
-        driver.set_window_position(-1000, 0)
+        driver.set_window_position(-100, 0)
+        driver.maximize_window()
         return driver
 
 
 def main():
     date_from = '2023-02-07'
     date_to = '2023-03-01'
-    number_of_hits = 1
+    number_of_hits = 3
     file_data_path = "data/stock_info.txt"
     headless = False
 
