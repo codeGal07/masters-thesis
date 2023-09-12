@@ -4,7 +4,7 @@ from selenium.webdriver import ActionChains
 from selenium.webdriver.common.by import By
 
 
-def click_agree_button_yahoo_finance(driver):
+def click_agree_button(driver):
     try:
         agree_button_yahoo = driver.find_element(By.NAME, 'agree')
         # agree_button_yahoo = driver.find_element(By.CSS_SELECTOR, 'button.btn.secondary.accept-all')
@@ -19,7 +19,7 @@ def click_agree_button_yahoo_finance(driver):
         pass
 
 
-def click_show_more_button_yahoo_finance(driver):
+def click_show_more_button(driver):
     try:
         story_continues_yahoo = driver.find_element(By.CSS_SELECTOR, "button.link.caas-button.collapse-button")
         story_continues_yahoo.click()
@@ -27,7 +27,7 @@ def click_show_more_button_yahoo_finance(driver):
         pass
 
 
-def get_title_yahoo_finance(driver):
+def get_title(driver):
     try:
         title_yahoo = driver.find_element(By.CSS_SELECTOR, "h1[data-test-locator='headline']")
         return title_yahoo.text
@@ -35,9 +35,9 @@ def get_title_yahoo_finance(driver):
         pass
 
 
-def get_data_yahoo_finance(driver):
+def get_data(driver):
     try:
-        content = driver.find_element(By.CSS_SELECTOR, "div.caas-body")
-        return content.text
+        article_body = driver.find_element(By.CSS_SELECTOR, "div.caas-body")
+        return article_body.text
     except:
         return ""

@@ -6,14 +6,16 @@ import pandas as pd
 import sys
 from selenium.webdriver import ActionChains
 from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from webdriver_manager.chrome import ChromeDriverManager
 
 from src.SP500DataScraper import get_SP500_data
 from src.SemanticAnalysis import *
 from src.WriteFile import *
-from src.YahooFinance.HelperMethodsYahooFinance import *
-from src.YahooFinance.HelperMethodsFool import *
+import src.helperMethods.TheMotleyFool as motley_fool_methods
+import src.helperMethods.YahooFinance as yahoo_finance_methods
+
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.firefox.firefox_profile import FirefoxProfile
 
@@ -108,14 +110,14 @@ def search_stock_info(stock_name, source, after, before, number_of_hits, file_da
             text_data = ""
             title_data = ""
             if source == "https://finance.yahoo.com/":
-                click_agree_button_yahoo_finance(driver)
-                title_data = get_title_yahoo_finance(driver)
-                click_show_more_button_yahoo_finance(driver)
-                text_data = get_data_yahoo_finance(driver)
+                yahoo_finance_methods.click_agree_button(driver)
+                title_data = yahoo_finance_methods.get_title(driver)
+                yahoo_finance_methods.click_show_more_button(driver)
+                text_data = yahoo_finance_methods.get_data(driver)
             if source == "https://www.fool.com/":
-                click_accept_button_fool(driver)
-                title_data = get_title_fool(driver)
-                text_data = get_data_fool(driver)
+                motley_fool_methods.click_accept(driver)
+                title_data = motley_fool_methods.get_title(driver)
+                text_data = motley_fool_methods.get_data(driver)
 
             polarity = evaluate_text_semantics(text_data)
 

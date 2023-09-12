@@ -3,7 +3,7 @@ import time
 from selenium.webdriver.common.by import By
 
 
-def click_accept_button_fool(driver):
+def click_accept(driver):
     try:
         time.sleep(3)
         cookies_fool = driver.find_element_by_id("onetrust-accept-btn-handler")
@@ -26,7 +26,7 @@ def click_accept_button_fool(driver):
         pass
 
 
-def get_title_fool(driver):
+def get_title(driver):
     try:
         title_element = driver.find_element(By.CSS_SELECTOR,
                                             "h1.font-medium.text-gray-1100.leading-relative-2.md\\:text-h2.lg\\:text-h1-tight.xl\\:text-h1")
@@ -34,9 +34,9 @@ def get_title_fool(driver):
     except:
         pass
 
-def get_data_fool(driver):
+def get_data(driver):
     try:
-        content = driver.find_element(By.CLASS_NAME, "tailwind-article-body")
-        return content.text
+        article_body = driver.find_element(By.CLASS_NAME, "tailwind-article-body")
+        return article_body.text
     except:
         return ""
