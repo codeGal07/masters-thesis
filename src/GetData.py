@@ -15,6 +15,7 @@ from src.SemanticAnalysis import *
 from src.WriteFile import *
 import src.helperMethods.TheMotleyFool as motley_fool_methods
 import src.helperMethods.YahooFinance as yahoo_finance_methods
+import src.helperMethods.Bloomberg as bloomberg_methods
 
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.firefox.firefox_profile import FirefoxProfile
@@ -58,8 +59,10 @@ def get_all_stock_symbols():
 
 def get_specify_sources():
     # TODO add more sources
-    # sources = ["https://finance.yahoo.com/", "https://www.fool.com/"]
-    sources = ["https://www.fool.com/"]
+    # Bloomberg: detected unusual activity
+
+    # sources = ["https://finance.yahoo.com/", "https://www.fool.com/", "https://www.bloomberg.com/"]
+    sources = ["https://www.bloomberg.com/"]
 
     return sources
 
@@ -118,6 +121,10 @@ def search_stock_info(stock_name, source, after, before, number_of_hits, file_da
                 motley_fool_methods.click_accept(driver)
                 title_data = motley_fool_methods.get_title(driver)
                 text_data = motley_fool_methods.get_data(driver)
+            if source == "https://www.bloomberg.com/":
+                bloomberg_methods.click_accept(driver)
+                title_data = bloomberg_methods.get_title(driver)
+                text_data = bloomberg_methods.get_data(driver)
 
             polarity = evaluate_text_semantics(text_data)
 

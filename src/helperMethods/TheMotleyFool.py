@@ -6,8 +6,8 @@ from selenium.webdriver.common.by import By
 def click_accept(driver):
     try:
         time.sleep(3)
-        cookies_fool = driver.find_element_by_id("onetrust-accept-btn-handler")
-        cookies_fool.click()
+        cookies = driver.find_element_by_id("onetrust-accept-btn-handler")
+        cookies.click()
 
     except:  # there is no accept cookies button
         pass
