@@ -115,6 +115,7 @@ def search_stock_info(stock_name, source, after, before, number_of_hits, file_da
             if source == "https://www.fool.com/":
                 click_accept_button_fool(driver)
                 title_data = get_title_fool(driver)
+                text_data = get_data_fool(driver)
 
             polarity = evaluate_text_semantics(text_data)
 

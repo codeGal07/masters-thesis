@@ -5,7 +5,7 @@ from selenium.webdriver.common.by import By
 
 def click_accept_button_fool(driver):
     try:
-        time.sleep(6)
+        time.sleep(3)
         cookies_fool = driver.find_element_by_id("onetrust-accept-btn-handler")
         cookies_fool.click()
 
@@ -13,7 +13,7 @@ def click_accept_button_fool(driver):
         pass
 
     try:
-        time.sleep(1)
+        time.sleep(3)
         radio_button_agree = driver.find_element_by_css_selector("input[name='legalese_id_1'][value='True']")
         radio_button_agree.click()
 
@@ -33,3 +33,10 @@ def get_title_fool(driver):
         return title_element.text
     except:
         pass
+
+def get_data_fool(driver):
+    try:
+        content = driver.find_element(By.CLASS_NAME, "tailwind-article-body")
+        return content.text
+    except:
+        return ""
