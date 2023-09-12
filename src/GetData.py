@@ -13,6 +13,7 @@ from src.SP500DataScraper import get_SP500_data
 from src.SemanticAnalysis import *
 from src.WriteFile import *
 from src.YahooFinance.HelperMethodsYahooFinance import *
+from src.YahooFinance.HelperMethodsFool import *
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.firefox.firefox_profile import FirefoxProfile
 
@@ -55,8 +56,8 @@ def get_all_stock_symbols():
 
 def get_specify_sources():
     # TODO add more sources
-    # sources = ["https://finance.yahoo.com/", "https://www.wsj.com/"]
-    sources = ["https://finance.yahoo.com/"]
+    # sources = ["https://finance.yahoo.com/", "https://www.fool.com/"]
+    sources = ["https://www.fool.com/"]
 
     return sources
 
@@ -93,7 +94,7 @@ def search_stock_info(stock_name, source, after, before, number_of_hits, file_da
     # Get links from Google search page
     myLnks = []
     for lnk in lnks:
-        print(lnk.get_attribute("href"))
+        # print(lnk.get_attribute("href"))
         myLnks.append(lnk.get_attribute("href"))
 
     for news_link in myLnks:
@@ -111,6 +112,9 @@ def search_stock_info(stock_name, source, after, before, number_of_hits, file_da
                 title_data = get_title_yahoo_finance(driver)
                 click_show_more_button_yahoo_finance(driver)
                 text_data = get_data_yahoo_finance(driver)
+            if source == "https://www.fool.com/":
+                click_accept_button_fool(driver)
+                title_data = get_title_fool(driver)
 
             polarity = evaluate_text_semantics(text_data)
 
@@ -156,8 +160,8 @@ def main():
     # Only needed once to get SP500 data into CSV file
     # get_SP500_data()
 
-    # driver = create_firefox_driver(headless)
-    driver = create_chrome_driver(headless)
+    driver = create_firefox_driver(headless)
+    # driver = create_chrome_driver(headless)
     create_file_if_not_exists(file_data_path)
     get_all_data(date_from, date_to, number_of_hits, file_data_path, driver)
     driver.quit()
