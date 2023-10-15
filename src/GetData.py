@@ -107,7 +107,6 @@ def search_stock_info(stock_name, source, after, before, number_of_hits, file_da
         if count_hits == number_of_hits:
             break
         if news_link is not None and news_link.startswith(source):
-            count_hits += 1
             # Go to yahoo news
             driver.get(news_link)
             # Get text data based on website
@@ -127,11 +126,12 @@ def search_stock_info(stock_name, source, after, before, number_of_hits, file_da
                 title_data = cnbc_methods.get_title(driver)
                 text_data = cnbc_methods.get_data(driver)
 
-            polarity = evaluate_text_semantics(text_data)
-
-            current_url = driver.current_url
-            write_data_into_file(before, stock_name, polarity, source, title_data, current_url, file_data_path,
-                                 text_data)
+            if text_data is not None:
+                polarity = evaluate_text_semantics(text_data)
+                current_url = driver.current_url
+                count_hits += 1
+                write_data_into_file(before, stock_name, polarity, source, title_data, current_url, file_data_path,
+                                     text_data)
 
 
 def create_chrome_driver(headless):
