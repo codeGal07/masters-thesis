@@ -15,7 +15,7 @@ from src.SemanticAnalysis import *
 from src.WriteFile import *
 import src.helperMethods.TheMotleyFool as motley_fool_methods
 import src.helperMethods.YahooFinance as yahoo_finance_methods
-import src.helperMethods.Bloomberg as bloomberg_methods
+import src.helperMethods.Cnbc as cnbc_methods
 
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.firefox.firefox_profile import FirefoxProfile
@@ -50,7 +50,7 @@ def get_trading_dates(start_date, end_date):
 
 def get_all_stock_symbols():
     # Read the CSV file into a pandas DataFrame
-    # TODO temporary cropped data
+    # NOTE temporary cropped data
     data = pd.read_csv('data/sp500_CROP.csv')
     stock_symbols = data['Company']
 
@@ -60,9 +60,10 @@ def get_all_stock_symbols():
 def get_specify_sources():
     # TODO add more sources
     # Bloomberg: detected unusual activity
+    # Seekingalpha: not free
 
     # sources = ["https://finance.yahoo.com/", "https://www.fool.com/", "https://www.bloomberg.com/"]
-    sources = ["https://www.bloomberg.com/"]
+    sources = ["https://www.cnbc.com/"]
 
     return sources
 
@@ -121,10 +122,10 @@ def search_stock_info(stock_name, source, after, before, number_of_hits, file_da
                 motley_fool_methods.click_accept(driver)
                 title_data = motley_fool_methods.get_title(driver)
                 text_data = motley_fool_methods.get_data(driver)
-            if source == "https://www.bloomberg.com/":
-                bloomberg_methods.click_accept(driver)
-                title_data = bloomberg_methods.get_title(driver)
-                text_data = bloomberg_methods.get_data(driver)
+            if source == "https://www.cnbc.com/":
+                cnbc_methods.click_accept(driver)
+                title_data = cnbc_methods.get_title(driver)
+                text_data = cnbc_methods.get_data(driver)
 
             polarity = evaluate_text_semantics(text_data)
 
