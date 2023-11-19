@@ -18,6 +18,7 @@ import src.helperMethods.YahooFinance as yahoo_finance_methods
 import src.helperMethods.Cnbc as cnbc_methods
 import src.helperMethods.BBC as BBC_methods
 import src.helperMethods.Reuters as reuters_methods
+import src.helperMethods.Investopedia as investopedia_methods
 
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.firefox.firefox_profile import FirefoxProfile
@@ -67,11 +68,18 @@ def get_specify_sources():
     # New york times: not free
     # WSY: not free
 
-    # bbc: Ok, but not a lot of dataa
+    # bbc: Ok, but not a lot of data
+    # investopedia: Ok, but not a lot of data
 
+    # sources =
+    # ["https://finance.yahoo.com/",
+    # "https://www.fool.com/",
+    # "https://www.cnbc.com/,
+    # https://www.bbc.com/,
+    # https://www.reuters.com/,
+    # https://www.investopedia.com/"]
 
-    # sources = ["https://finance.yahoo.com/", "https://www.fool.com/", "https://www.cnbc.com/, https://www.bbc.com/, https://www.reuters.com/"]
-    sources = ["https://www.reuters.com/"]
+    sources = ["https://www.investopedia.com/"]
 
     return sources
 
@@ -140,6 +148,10 @@ def search_stock_info(stock_name, source, after, before, number_of_hits, file_da
                 reuters_methods.click_accept(driver)
                 title_data = reuters_methods.get_title(driver)
                 text_data = reuters_methods.get_data(driver)
+            if source == "https://www.investopedia.com/":
+                investopedia_methods.click_accept(driver)
+                title_data = investopedia_methods.get_title(driver)
+                text_data = investopedia_methods.get_data(driver)
 
             if text_data is not None:
                 polarity = evaluate_text_semantics(text_data)
