@@ -16,6 +16,7 @@ from src.WriteFile import *
 import src.helperMethods.TheMotleyFool as motley_fool_methods
 import src.helperMethods.YahooFinance as yahoo_finance_methods
 import src.helperMethods.Cnbc as cnbc_methods
+import src.helperMethods.BBC as BBC_methods
 
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.firefox.firefox_profile import FirefoxProfile
@@ -59,11 +60,17 @@ def get_all_stock_symbols():
 
 def get_specify_sources():
     # TODO add more sources
-    # Bloomberg: detected unusual activity
+    # Bloomberg: detected unusual activity right away
     # Seekingalpha: not free
+    # MarketWatch: not free
+    # New york times: not free
+    # WSY: not free
 
-    # sources = ["https://finance.yahoo.com/", "https://www.fool.com/", "https://www.bloomberg.com/"]
-    sources = ["https://www.cnbc.com/"]
+    # bbc: Ok, but not a lot of data
+
+
+    # sources = ["https://finance.yahoo.com/", "https://www.fool.com/", "https://www.cnbc.com/, https://www.nytimes.com/"]
+    sources = ["https://www.bbc.com/"]
 
     return sources
 
@@ -125,6 +132,9 @@ def search_stock_info(stock_name, source, after, before, number_of_hits, file_da
                 cnbc_methods.click_accept(driver)
                 title_data = cnbc_methods.get_title(driver)
                 text_data = cnbc_methods.get_data(driver)
+            if source == "https://www.bbc.com/":
+                title_data = BBC_methods.get_title(driver)
+                text_data = BBC_methods.get_data(driver)
 
             if text_data is not None:
                 polarity = evaluate_text_semantics(text_data)
