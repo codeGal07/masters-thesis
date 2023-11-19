@@ -67,7 +67,7 @@ def get_specify_sources():
     # New york times: not free
     # WSY: not free
 
-    # bbc: Ok, but not a lot of data
+    # bbc: Ok, but not a lot of dataa
 
 
     # sources = ["https://finance.yahoo.com/", "https://www.fool.com/", "https://www.cnbc.com/, https://www.bbc.com/, https://www.reuters.com/"]
