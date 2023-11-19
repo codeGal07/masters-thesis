@@ -96,34 +96,21 @@ def search_stock_info(stock_name, source, after, before, number_of_hits, file_da
 
     driver.get("https://www.google.com/search?q=" + search_string)
 
-    # checks if cought being a bot
+    # checks if caught being a bot
     try:
         driver.find_element(By.NAME, 'Our systems have detected unusual traffic from your computer network')
         sys.exit("CAUGHT BEING A BOT")
     except:
         pass
 
-    try:
+    agree_with_cookies_on_google(driver)
+    myLinks = get_links_from_google_search_page(driver)
 
-        agree_button_google = driver.find_element(By.ID, 'L2AGLb')
-        agree_button_google.click()
-    except:
-        pass
-
-    lnks = driver.find_elements(By.TAG_NAME, "a")
     count_hits = 0
-
-    # Get links from Google search page
-    myLnks = []
-    for lnk in lnks:
-        # print(lnk.get_attribute("href"))
-        myLnks.append(lnk.get_attribute("href"))
-
-    for news_link in myLnks:
+    for news_link in myLinks:
         if count_hits == number_of_hits:
             break
         if news_link is not None and news_link.startswith(source):
-            # Go to yahoo news
             driver.get(news_link)
             # Get text data based on website
             text_data = ""
@@ -159,6 +146,23 @@ def search_stock_info(stock_name, source, after, before, number_of_hits, file_da
                 count_hits += 1
                 write_data_into_file(before, stock_name, polarity, source, title_data, current_url, file_data_path,
                                      text_data)
+
+
+def agree_with_cookies_on_google(driver):
+    try:
+        agree_button_google = driver.find_element(By.ID, 'L2AGLb')
+        agree_button_google.click()
+    except:
+        pass
+
+
+def get_links_from_google_search_page(driver):
+    links = driver.find_elements(By.TAG_NAME, "a")
+    myLinks = []
+    for lnk in links:
+        # print(lnk.get_attribute("href"))
+        myLinks.append(lnk.get_attribute("href"))
+    return myLinks
 
 
 def create_chrome_driver(headless):
