@@ -17,6 +17,7 @@ import src.helperMethods.TheMotleyFool as motley_fool_methods
 import src.helperMethods.YahooFinance as yahoo_finance_methods
 import src.helperMethods.Cnbc as cnbc_methods
 import src.helperMethods.BBC as BBC_methods
+import src.helperMethods.Reuters as reuters_methods
 
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.firefox.firefox_profile import FirefoxProfile
@@ -69,8 +70,8 @@ def get_specify_sources():
     # bbc: Ok, but not a lot of data
 
 
-    # sources = ["https://finance.yahoo.com/", "https://www.fool.com/", "https://www.cnbc.com/, https://www.nytimes.com/"]
-    sources = ["https://www.bbc.com/"]
+    # sources = ["https://finance.yahoo.com/", "https://www.fool.com/", "https://www.cnbc.com/, https://www.bbc.com/, https://www.reuters.com/"]
+    sources = ["https://www.reuters.com/"]
 
     return sources
 
@@ -135,6 +136,10 @@ def search_stock_info(stock_name, source, after, before, number_of_hits, file_da
             if source == "https://www.bbc.com/":
                 title_data = BBC_methods.get_title(driver)
                 text_data = BBC_methods.get_data(driver)
+            if source == "https://www.reuters.com/":
+                reuters_methods.click_accept(driver)
+                title_data = reuters_methods.get_title(driver)
+                text_data = reuters_methods.get_data(driver)
 
             if text_data is not None:
                 polarity = evaluate_text_semantics(text_data)
