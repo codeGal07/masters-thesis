@@ -79,7 +79,7 @@ def get_specify_sources():
     # https://www.reuters.com/,
     # https://www.investopedia.com/"]
 
-    sources = ["https://www.investopedia.com/"]
+    sources = ["https://finance.yahoo.com/"]
 
     return sources
 
@@ -96,7 +96,7 @@ def search_stock_info(stock_name, source, after, before, number_of_hits, file_da
 
     driver.get("https://www.google.com/search?q=" + search_string)
 
-    # checks if caught being a bot
+    # Checks if caught being a bot
     try:
         driver.find_element(By.NAME, 'Our systems have detected unusual traffic from your computer network')
         sys.exit("CAUGHT BEING A BOT")
@@ -116,10 +116,14 @@ def search_stock_info(stock_name, source, after, before, number_of_hits, file_da
             text_data = ""
             title_data = ""
             if source == "https://finance.yahoo.com/":
-                yahoo_finance_methods.click_agree_button(driver)
-                title_data = yahoo_finance_methods.get_title(driver)
-                yahoo_finance_methods.click_show_more_button(driver)
-                text_data = yahoo_finance_methods.get_data(driver)
+                yahoo_scraper = yahoo_finance_methods.YahooFinanceScraper(driver)
+                yahoo_scraper.process_opening_yahoo_finance()
+                title_data, text_data = yahoo_scraper.get_title_and_data()
+            # if source == "https://finance.yahoo.com/":
+            #     yahoo_finance_methods.click_agree_button(driver)
+            #     yahoo_finance_methods.click_show_more_button(driver)
+            #     title_data = yahoo_finance_methods.get_title(driver)
+            #     text_data = yahoo_finance_methods.get_data(driver)
             if source == "https://www.fool.com/":
                 motley_fool_methods.click_accept(driver)
                 title_data = motley_fool_methods.get_title(driver)
