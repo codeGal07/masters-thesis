@@ -13,8 +13,6 @@ from webdriver_manager.chrome import ChromeDriverManager
 from src.SP500DataScraper import get_SP500_data
 from src.SemanticAnalysis import *
 from src.WriteFile import *
-import src.helperMethods.TheMotleyFool as motley_fool_methods
-import src.helperMethods.YahooFinance as yahoo_finance_methods
 import src.helperMethods.Cnbc as cnbc_methods
 import src.helperMethods.BBC as BBC_methods
 import src.helperMethods.Reuters as reuters_methods
@@ -22,6 +20,9 @@ import src.helperMethods.Investopedia as investopedia_methods
 
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.firefox.firefox_profile import FirefoxProfile
+
+from src.helperMethods.TheMotleyFool import TheMotleyFoolScraper
+from src.helperMethods.YahooFinance import YahooFinanceScraper
 
 
 # from selenium.webdriver.firefox.options import Options
@@ -79,7 +80,7 @@ def get_specify_sources():
     # https://www.reuters.com/,
     # https://www.investopedia.com/"]
 
-    sources = ["https://finance.yahoo.com/"]
+    sources = ["https://www.fool.com/"]
 
     return sources
 
@@ -116,18 +117,13 @@ def search_stock_info(stock_name, source, after, before, number_of_hits, file_da
             text_data = ""
             title_data = ""
             if source == "https://finance.yahoo.com/":
-                yahoo_scraper = yahoo_finance_methods.YahooFinanceScraper(driver)
-                yahoo_scraper.process_opening_yahoo_finance()
+                yahoo_scraper = YahooFinanceScraper(driver)
+                yahoo_scraper.process_opening()
                 title_data, text_data = yahoo_scraper.get_title_and_data()
-            # if source == "https://finance.yahoo.com/":
-            #     yahoo_finance_methods.click_agree_button(driver)
-            #     yahoo_finance_methods.click_show_more_button(driver)
-            #     title_data = yahoo_finance_methods.get_title(driver)
-            #     text_data = yahoo_finance_methods.get_data(driver)
             if source == "https://www.fool.com/":
-                motley_fool_methods.click_accept(driver)
-                title_data = motley_fool_methods.get_title(driver)
-                text_data = motley_fool_methods.get_data(driver)
+                motley_fool_scraper = TheMotleyFoolScraper(driver)
+                motley_fool_scraper.process_opening()
+                title_data, text_data = motley_fool_scraper.get_title_and_data()
             if source == "https://www.cnbc.com/":
                 cnbc_methods.click_accept(driver)
                 title_data = cnbc_methods.get_title(driver)

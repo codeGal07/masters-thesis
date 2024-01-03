@@ -7,22 +7,22 @@ class YahooFinanceScraper:
 
     def click_agree_button(self):
         try:
-            agree_button_yahoo = self.driver.find_element(By.NAME, 'agree')
-            # agree_button_yahoo = driver.find_element(By.CSS_SELECTOR, 'button.btn.secondary.accept-all')
+            agree_button = self.driver.find_element(By.NAME, 'agree')
+            # agree_button = driver.find_element(By.CSS_SELECTOR, 'button.btn.secondary.accept-all')
 
             try:
-                scroll_down_button_yahoo = self.driver.find_element(By.ID, 'scroll-down-btn')
-                scroll_down_button_yahoo.click()
+                scroll_down_button = self.driver.find_element(By.ID, 'scroll-down-btn')
+                scroll_down_button.click()
             except:
                 pass
-            agree_button_yahoo.click()
+            agree_button.click()
         except:
             pass
 
     def click_show_more_button(self):
         try:
-            story_continues_yahoo = self.driver.find_element(By.CSS_SELECTOR, "button.link.caas-button.collapse-button")
-            story_continues_yahoo.click()
+            story_continues = self.driver.find_element(By.CSS_SELECTOR, "button.link.caas-button.collapse-button")
+            story_continues.click()
         except:
             pass
 
@@ -35,12 +35,12 @@ class YahooFinanceScraper:
 
     def get_title(self):
         try:
-            title_yahoo = self.driver.find_element(By.CSS_SELECTOR, "h1[data-test-locator='headline']")
-            return title_yahoo.text
+            title = self.driver.find_element(By.CSS_SELECTOR, "h1[data-test-locator='headline']")
+            return title.text
         except:
             pass
 
-    def process_opening_yahoo_finance(self):
+    def process_opening(self):
         self.click_agree_button()
         self.click_show_more_button()
 
