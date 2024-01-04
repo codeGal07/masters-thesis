@@ -18,7 +18,7 @@ import src.helper_methods.BBCScraper as BBC_methods
 import src.helper_methods.InvestopediaScraper as investopedia_methods
 
 from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.firefox.firefox_profile import FirefoxProfile
+from selenium.webdriver.firefox.options import Options as FirefoxOptions
 
 from src.helper_methods.TheMotleyFoolScraper import TheMotleyFoolScraper
 from src.helper_methods.YahooFinanceScraper import YahooFinanceScraper
@@ -74,14 +74,14 @@ def get_specify_sources():
 
     # bbc: Ok, but not a lot of data
     # investopedia: Ok, but not a lot of data
-    # reuters: TODO knows I'm a bot
+    # https://www.reuters.com/ TODO knows I'm a bot
 
     sources = ["https://finance.yahoo.com/",
-    "https://www.fool.com/",
-    "https://www.cnbc.com/",
-    "https://www.bbc.com/",
-    "https://www.reuters.com/",
-    "https://www.investopedia.com/"]
+               "https://www.fool.com/",
+               "https://www.cnbc.com/",
+               "https://www.bbc.com/",
+               # "https://www.reuters.com/",
+               "https://www.investopedia.com/"]
 
     # sources = ["https://www.bbc.com/"]
 
@@ -184,8 +184,20 @@ def create_chrome_driver(headless):
 def create_firefox_driver(headless):
     pass
     if headless:
-        # todo
-        pass
+        # Create a Firefox WebDriver instance in headless mode
+        FIREFOXPATH = '/Applications/Firefox.app/Contents/MacOS/firefox-bin'
+
+        # Create a Firefox WebDriver instance in headless mode
+        options = webdriver.FirefoxOptions()
+        options.binary = FIREFOXPATH
+        options.add_argument('--headless')
+
+        # You can edit firefox profiles in about:profiles
+        options.set_preference('profile',
+                               "/Users/sabina.matjasic_new/Library/Application Support/Firefox/Profiles/t9vwtgiz.FirstUser")
+
+        return webdriver.Firefox(options=options, log_path="geckodriver.log")
+
     else:
         # Create the WebDriver instance
         driver = webdriver.Firefox()
@@ -199,7 +211,7 @@ def main():
     date_to = '2023-03-01'
     number_of_hits = 1
     file_data_path = "data/stock_info.txt"
-    headless = False
+    headless = True
 
     # Only needed once to get SP500 data into CSV file
     # get_SP500_data()
