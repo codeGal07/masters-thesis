@@ -110,6 +110,16 @@ def search_stock_info(stock_name, source, after, before, number_of_hits, file_da
     agree_with_cookies_on_google(driver)
     myLinks = get_links_from_google_search_page(driver)
 
+    # Define a dictionary to map sources to their corresponding scraper classes
+    scraper_mapping = {
+        "https://finance.yahoo.com/": YahooFinanceScraper,
+        "https://www.fool.com/": TheMotleyFoolScraper,
+        "https://www.cnbc.com/": CnbcScraper,
+        "https://www.bbc.com/": BBCScraper,
+        "https://www.reuters.com/": ReutersScraper,
+        "https://www.investopedia.com/": InvestopediaScraper
+    }
+
     count_hits = 0
     for news_link in myLinks:
         if count_hits == number_of_hits:
@@ -119,30 +129,19 @@ def search_stock_info(stock_name, source, after, before, number_of_hits, file_da
             # Get text data based on website
             text_data = ""
             title_data = ""
-            if source == "https://finance.yahoo.com/":
-                yahoo_scraper = YahooFinanceScraper(driver)
-                yahoo_scraper.process_opening()
-                title_data, text_data = yahoo_scraper.get_title_and_text()
-            if source == "https://www.fool.com/":
-                motley_fool_scraper = TheMotleyFoolScraper(driver)
-                motley_fool_scraper.process_opening()
-                title_data, text_data = motley_fool_scraper.get_title_and_text()
-            if source == "https://www.cnbc.com/":
-                cnbc_scraper = CnbcScraper(driver)
-                cnbc_scraper.process_opening()
-                title_data, text_data = cnbc_scraper.get_title_and_text()
-            if source == "https://www.bbc.com/":
-                bbc_scraper = BBCScraper(driver)
-                bbc_scraper.process_opening()
-                title_data, text_data = bbc_scraper.get_title_and_text()
-            if source == "https://www.reuters.com/":
-                reuters_scraper = ReutersScraper(driver)
-                reuters_scraper.process_opening()
-                title_data, text_data = reuters_scraper.get_title_and_text()
-            if source == "https://www.investopedia.com/":
-                investopedia_scraper = InvestopediaScraper(driver)
-                investopedia_scraper.process_opening()
-                title_data, text_data = investopedia_scraper.get_title_and_text()
+
+            # Check if the source is in the mapping
+            if source in scraper_mapping:
+                # Get the scraper class based on the source
+                scraper_class = scraper_mapping[source]
+
+                # Instantiate the scraper and process the opening
+                current_scraper = scraper_class(driver)
+                current_scraper.process_opening()
+
+                # Get title and text data
+                title_data, text_data = current_scraper.get_title_and_text()
+
             if text_data is not None:
                 polarity = evaluate_text_semantics(text_data)
                 current_url = driver.current_url
