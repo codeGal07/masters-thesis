@@ -13,16 +13,19 @@ from webdriver_manager.chrome import ChromeDriverManager
 from src.SP500DataScraper import get_SP500_data
 from src.SemanticAnalysis import *
 from src.WriteFile import *
-import src.helperMethods.Cnbc as cnbc_methods
-import src.helperMethods.BBC as BBC_methods
-import src.helperMethods.Reuters as reuters_methods
-import src.helperMethods.Investopedia as investopedia_methods
+import src.helper_methods.CnbcScraper as cnbc_methods
+import src.helper_methods.BBCScraper as BBC_methods
+import src.helper_methods.InvestopediaScraper as investopedia_methods
 
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.firefox.firefox_profile import FirefoxProfile
 
-from src.helperMethods.TheMotleyFool import TheMotleyFoolScraper
-from src.helperMethods.YahooFinance import YahooFinanceScraper
+from src.helper_methods.TheMotleyFoolScraper import TheMotleyFoolScraper
+from src.helper_methods.YahooFinanceScraper import YahooFinanceScraper
+from src.helper_methods.ReutersScraper import ReutersScraper
+from src.helper_methods.InvestopediaScraper import InvestopediaScraper
+from src.helper_methods.CnbcScraper import CnbcScraper
+from src.helper_methods.BBCScraper import BBCScraper
 
 
 # from selenium.webdriver.firefox.options import Options
@@ -71,16 +74,16 @@ def get_specify_sources():
 
     # bbc: Ok, but not a lot of data
     # investopedia: Ok, but not a lot of data
+    # reuters: TODO knows I'm a bot
 
-    # sources =
-    # ["https://finance.yahoo.com/",
-    # "https://www.fool.com/",
-    # "https://www.cnbc.com/,
-    # https://www.bbc.com/,
-    # https://www.reuters.com/,
-    # https://www.investopedia.com/"]
+    sources = ["https://finance.yahoo.com/",
+    "https://www.fool.com/",
+    "https://www.cnbc.com/",
+    "https://www.bbc.com/",
+    "https://www.reuters.com/",
+    "https://www.investopedia.com/"]
 
-    sources = ["https://www.fool.com/"]
+    # sources = ["https://www.bbc.com/"]
 
     return sources
 
@@ -119,27 +122,27 @@ def search_stock_info(stock_name, source, after, before, number_of_hits, file_da
             if source == "https://finance.yahoo.com/":
                 yahoo_scraper = YahooFinanceScraper(driver)
                 yahoo_scraper.process_opening()
-                title_data, text_data = yahoo_scraper.get_title_and_data()
+                title_data, text_data = yahoo_scraper.get_title_and_text()
             if source == "https://www.fool.com/":
                 motley_fool_scraper = TheMotleyFoolScraper(driver)
                 motley_fool_scraper.process_opening()
-                title_data, text_data = motley_fool_scraper.get_title_and_data()
+                title_data, text_data = motley_fool_scraper.get_title_and_text()
             if source == "https://www.cnbc.com/":
-                cnbc_methods.click_accept(driver)
-                title_data = cnbc_methods.get_title(driver)
-                text_data = cnbc_methods.get_data(driver)
+                cnbc_scraper = CnbcScraper(driver)
+                cnbc_scraper.process_opening()
+                title_data, text_data = cnbc_scraper.get_title_and_text()
             if source == "https://www.bbc.com/":
-                title_data = BBC_methods.get_title(driver)
-                text_data = BBC_methods.get_data(driver)
+                bbc_scraper = BBCScraper(driver)
+                bbc_scraper.process_opening()
+                title_data, text_data = bbc_scraper.get_title_and_text()
             if source == "https://www.reuters.com/":
-                reuters_methods.click_accept(driver)
-                title_data = reuters_methods.get_title(driver)
-                text_data = reuters_methods.get_data(driver)
+                reuters_scraper = ReutersScraper(driver)
+                reuters_scraper.process_opening()
+                title_data, text_data = reuters_scraper.get_title_and_text()
             if source == "https://www.investopedia.com/":
-                investopedia_methods.click_accept(driver)
-                title_data = investopedia_methods.get_title(driver)
-                text_data = investopedia_methods.get_data(driver)
-
+                investopedia_scraper = InvestopediaScraper(driver)
+                investopedia_scraper.process_opening()
+                title_data, text_data = investopedia_scraper.get_title_and_text()
             if text_data is not None:
                 polarity = evaluate_text_semantics(text_data)
                 current_url = driver.current_url
@@ -195,7 +198,7 @@ def create_firefox_driver(headless):
 def main():
     date_from = '2023-02-07'
     date_to = '2023-03-01'
-    number_of_hits = 3
+    number_of_hits = 1
     file_data_path = "data/stock_info.txt"
     headless = False
 
