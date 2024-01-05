@@ -26,9 +26,7 @@ from src.helper_methods.ReutersScraper import ReutersScraper
 from src.helper_methods.InvestopediaScraper import InvestopediaScraper
 from src.helper_methods.CnbcScraper import CnbcScraper
 from src.helper_methods.BBCScraper import BBCScraper
-
-
-# from selenium.webdriver.firefox.options import Options
+from src.helper_methods.NasdaqScraper import NasdaqScraper
 
 
 def get_all_data(date_from, date_to, number_of_hits, file_data_path, driver):
@@ -71,19 +69,19 @@ def get_specify_sources():
     # MarketWatch: not free
     # New york times: not free
     # WSY: not free
+    # https://www.reuters.com/ TODO knows I'm a bot
 
     # bbc: Ok, but not a lot of data
     # investopedia: Ok, but not a lot of data
-    # https://www.reuters.com/ TODO knows I'm a bot
 
-    sources = ["https://finance.yahoo.com/",
-               "https://www.fool.com/",
-               "https://www.cnbc.com/",
-               "https://www.bbc.com/",
-               # "https://www.reuters.com/",
-               "https://www.investopedia.com/"]
+    # sources = ["https://finance.yahoo.com/",
+    #            "https://www.fool.com/",
+    #            "https://www.cnbc.com/",
+    #            "https://www.bbc.com/",
+    #            # "https://www.nasdaq.com/",
+    #            "https://www.investopedia.com/"]
 
-    # sources = ["https://www.bbc.com/"]
+    sources = ["https://www.nasdaq.com/"]
 
     return sources
 
@@ -117,7 +115,9 @@ def search_stock_info(stock_name, source, after, before, number_of_hits, file_da
         "https://www.cnbc.com/": CnbcScraper,
         "https://www.bbc.com/": BBCScraper,
         "https://www.reuters.com/": ReutersScraper,
-        "https://www.investopedia.com/": InvestopediaScraper
+        "https://www.investopedia.com/": InvestopediaScraper,
+        "https://www.nasdaq.com/": NasdaqScraper
+
     }
 
     count_hits = 0
@@ -211,7 +211,7 @@ def main():
     date_to = '2023-03-01'
     number_of_hits = 1
     file_data_path = "data/stock_info.txt"
-    headless = True
+    headless = False
 
     # Only needed once to get SP500 data into CSV file
     # get_SP500_data()
