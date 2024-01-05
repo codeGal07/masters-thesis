@@ -70,6 +70,7 @@ def get_specify_sources():
     # MarketWatch: not free
     # New york times: not free
     # WSY: not free
+    # https://www.ft.com/ not free
     # https://www.reuters.com/ TODO knows I'm a bot
     # https://www.investing.com/ random articles
 
@@ -82,11 +83,10 @@ def get_specify_sources():
     #            "https://www.cnbc.com/",
     #            "https://www.bbc.com/",
     #            "https://www.nasdaq.com/",
-    #            "https://www.cnn.com",
-    #            "https://www.investopedia.com/",
-    #            "https://www.ft.com/"]
+    #            "https://www.cnn.com/",
+    #            "https://www.investopedia.com/"]
 
-    sources = ["https://www.cnn.com"]
+    sources = ["https://www.ft.com/"]
 
     return sources
 
