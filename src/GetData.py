@@ -27,6 +27,7 @@ from src.helper_methods.InvestopediaScraper import InvestopediaScraper
 from src.helper_methods.CnbcScraper import CnbcScraper
 from src.helper_methods.BBCScraper import BBCScraper
 from src.helper_methods.NasdaqScraper import NasdaqScraper
+from src.helper_methods.CnnScraper import CnnScraper
 
 
 def get_all_data(date_from, date_to, number_of_hits, file_data_path, driver):
@@ -70,18 +71,22 @@ def get_specify_sources():
     # New york times: not free
     # WSY: not free
     # https://www.reuters.com/ TODO knows I'm a bot
+    # https://www.investing.com/ random articles
 
     # bbc: Ok, but not a lot of data
     # investopedia: Ok, but not a lot of data
+    # cnn: almost no data
 
     # sources = ["https://finance.yahoo.com/",
     #            "https://www.fool.com/",
     #            "https://www.cnbc.com/",
     #            "https://www.bbc.com/",
-    #            # "https://www.nasdaq.com/",
-    #            "https://www.investopedia.com/"]
+    #            "https://www.nasdaq.com/",
+    #            "https://www.cnn.com",
+    #            "https://www.investopedia.com/",
+    #            "https://www.ft.com/"]
 
-    sources = ["https://www.nasdaq.com/"]
+    sources = ["https://www.cnn.com"]
 
     return sources
 
@@ -116,7 +121,8 @@ def search_stock_info(stock_name, source, after, before, number_of_hits, file_da
         "https://www.bbc.com/": BBCScraper,
         "https://www.reuters.com/": ReutersScraper,
         "https://www.investopedia.com/": InvestopediaScraper,
-        "https://www.nasdaq.com/": NasdaqScraper
+        "https://www.nasdaq.com/": NasdaqScraper,
+        "https://www.cnn.com": CnnScraper
 
     }
 
