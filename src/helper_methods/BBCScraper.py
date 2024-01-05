@@ -25,6 +25,9 @@ class BBCScraper:
             )
             agree_button.click()
 
+            # Switch back to the default content
+            self.driver.switch_to.default_content()
+
         except:
             pass
 
