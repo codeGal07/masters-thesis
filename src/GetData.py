@@ -1,8 +1,9 @@
 from datetime import time
-
+import time
 from selenium import webdriver
 import pandas_market_calendars as mcal
 import pandas as pd
+import random
 import sys
 from selenium.webdriver import ActionChains
 from selenium.webdriver.chrome.service import Service
@@ -76,7 +77,6 @@ def get_specify_sources():
     # https://www.investing.com/ random articles
     # https://www.marketscreener.com/ random articles
 
-
     # bbc: Ok, but not a lot of data
     # investopedia: Ok, but not a lot of data
     # cnn: almost no data
@@ -104,6 +104,8 @@ def check_link_starts_with_source(source, lnk):
 
 def search_stock_info(stock_name, source, after, before, number_of_hits, file_data_path, driver, i):
     search_string = stock_name + " site:" + source + " after:" + after + " before:" + before
+
+    wait_to_avoid_bot_detection()
 
     driver.get("https://www.google.com/search?q=" + search_string)
 
@@ -176,6 +178,11 @@ def get_links_from_google_search_page(driver):
         # print(lnk.get_attribute("href"))
         myLinks.append(lnk.get_attribute("href"))
     return myLinks
+
+
+def wait_to_avoid_bot_detection():
+    some_time = random.uniform(0, 3)
+    time.sleep(some_time)
 
 
 def create_chrome_driver(headless):
