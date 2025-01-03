@@ -11,7 +11,8 @@ class TheMotleyFoolScraper:
 
     def click_accept(self):
         try:
-            cookies = self.wait.until(self.driver.find_element_by_id("onetrust-accept-btn-handler"))
+            cookies = self.wait.until(
+                EC.presence_of_element_located((By.ID, "onetrust-accept-btn-handler")))
             cookies.click()
 
         except:  # there is no accept cookies button
@@ -40,8 +41,7 @@ class TheMotleyFoolScraper:
     def get_article_title(self):
         try:
             title = self.wait.until(
-                EC.presence_of_element_located((By.CSS_SELECTOR,
-                                                "h1.font-medium.text-gray-1100.leading-relative-2.md\\:text-h2.lg\\:text-h1-tight.xl\\:text-h1")))
+                EC.presence_of_element_located((By.CSS_SELECTOR, ".text-3xl")))
             return title.text
         except Exception as e:
             print(f"Error: {e}")

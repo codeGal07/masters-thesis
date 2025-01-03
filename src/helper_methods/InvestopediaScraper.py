@@ -12,7 +12,7 @@ class InvestopediaScraper:
 
     def click_accept(self):
         try:
-            cookies = self.wait.until(self.driver.find_element(By.ID, "onetrust-accept-btn-handler"))
+            cookies = self.wait.until(EC.presence_of_element_located((By.ID, 'onetrust-accept-btn-handler')))
             cookies.click()
 
         except:  # there is no accept cookies button

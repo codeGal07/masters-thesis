@@ -1,26 +1,17 @@
 from datetime import time
-import time
-from selenium import webdriver
-import pandas_market_calendars as mcal
-import pandas as pd
-import random
 import sys
-from selenium.webdriver import ActionChains
-from selenium.webdriver.chrome.service import Service
+import random
+import time
+import pandas as pd
+from selenium import webdriver
 from selenium.webdriver.common.by import By
-from selenium.webdriver.common.keys import Keys
-from webdriver_manager.chrome import ChromeDriverManager
+import pandas_market_calendars as mcal
+from selenium import webdriver
+from selenium.webdriver.firefox.service import Service
+from selenium.webdriver.firefox.options import Options
 
-from src.SP500DataScraper import get_SP500_data
 from src.SemanticAnalysis import *
 from src.WriteFile import *
-import src.helper_methods.CnbcScraper as cnbc_methods
-import src.helper_methods.BBCScraper as BBC_methods
-import src.helper_methods.InvestopediaScraper as investopedia_methods
-
-from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.firefox.options import Options as FirefoxOptions
-
 from src.helper_methods.TheMotleyFoolScraper import TheMotleyFoolScraper
 from src.helper_methods.YahooFinanceScraper import YahooFinanceScraper
 from src.helper_methods.ReutersScraper import ReutersScraper
@@ -32,8 +23,8 @@ from src.helper_methods.CnnScraper import CnnScraper
 from src.helper_methods.BusinessInsider import BusinessInsider
 
 
-def get_all_data(date_from, date_to, number_of_hits, file_data_path, driver):
-    trading_dates = get_trading_dates(date_from, date_to)
+def get_all_data(driver):
+    trading_dates = get_trading_dates(DATE_FROM, DATE_TO)
     stock_symbols = get_all_stock_symbols()
     sources = get_specify_sources()
 
@@ -42,7 +33,7 @@ def get_all_data(date_from, date_to, number_of_hits, file_data_path, driver):
         after = trading_dates[i + 1].strftime("%Y-%m-%d")
         for stock_name in stock_symbols:
             for source in sources:
-                search_stock_info(stock_name, source, before, after, number_of_hits, file_data_path, driver, i)
+                search_stock_info(stock_name, source, before, after, driver, i)
 
 
 def get_trading_dates(start_date, end_date):
@@ -81,16 +72,16 @@ def get_specify_sources():
     # investopedia: Ok, but not a lot of data
     # cnn: almost no data
 
-    # sources = ["https://finance.yahoo.com/",
-    #            "https://www.fool.com/",
-    #            "https://www.cnbc.com/",
-    #            "https://www.bbc.com/",
-    #            "https://www.nasdaq.com/",
-    #            "https://www.cnn.com/",
-    #            "https://www.investopedia.com/",
-    #            "https://www.businessinsider.com/"]
+    # sources = ["https://finance.yahoo.com/",  # Works
+    #            "https://www.fool.com/",  # Works
+    #            "https://www.cnbc.com/",  # Works
+    #            "https://www.bbc.com/",  # Works
+    #            "https://www.nasdaq.com/", # Works
+    #            "https://www.cnn.com/", # Works
+    #            "https://www.investopedia.com/", # Works
+    #            "https://www.businessinsider.com/"]  # Works
 
-    sources = ["https://www.businessinsider.com/"]
+    sources = ["https://finance.yahoo.com/"]
 
     return sources
 
@@ -102,7 +93,7 @@ def check_link_starts_with_source(source, lnk):
         return False
 
 
-def search_stock_info(stock_name, source, after, before, number_of_hits, file_data_path, driver, i):
+def search_stock_info(stock_name, source, after, before, driver, i):
     search_string = stock_name + " site:" + source + " after:" + after + " before:" + before
 
     wait_to_avoid_bot_detection()
@@ -112,7 +103,12 @@ def search_stock_info(stock_name, source, after, before, number_of_hits, file_da
     # Checks if caught being a bot
     try:
         driver.find_element(By.NAME, 'Our systems have detected unusual traffic from your computer network')
-        sys.exit("CAUGHT BEING A BOT")
+        # sys.exit("CAUGHT BEING A BOT")
+        # Switch of profiles in Firefox
+        a = 3
+        # close_firefox_reopen_with_different_profile(stock_name, source, after, before, number_of_hits, file_data_path,
+        #                                             driver, i, headless, date_from, date_to)
+
     except:
         pass
 
@@ -128,14 +124,14 @@ def search_stock_info(stock_name, source, after, before, number_of_hits, file_da
         "https://www.reuters.com/": ReutersScraper,
         "https://www.investopedia.com/": InvestopediaScraper,
         "https://www.nasdaq.com/": NasdaqScraper,
-        "https://www.cnn.com": CnnScraper,
+        "https://www.cnn.com/": CnnScraper,
         "https://www.businessinsider.com/": BusinessInsider
 
     }
 
     count_hits = 0
     for news_link in myLinks:
-        if count_hits == number_of_hits:
+        if count_hits == NUMBER_OF_HITS:
             break
         if news_link is not None and news_link.startswith(source):
             driver.get(news_link)
@@ -159,8 +155,15 @@ def search_stock_info(stock_name, source, after, before, number_of_hits, file_da
                 polarity = evaluate_text_semantics(text_data)
                 current_url = driver.current_url
                 count_hits += 1
-                write_data_into_file(before, stock_name, polarity, source, title_data, current_url, file_data_path,
+                write_data_into_file(before, stock_name, polarity, source, title_data, current_url, FILE_DATA_PATH,
                                      text_data)
+
+
+# def close_firefox_reopen_with_different_profile(stock_name, source, after, before, number_of_hits, file_data_path,
+#                                                 driver, i, headless, date_from, date_to):
+#     driver.close()
+#     driver = create_firefox_driver(headless, profile)
+#     get_all_data(date_from, date_to, number_of_hits, file_data_path, driver, headless)
 
 
 def agree_with_cookies_on_google(driver):
@@ -199,45 +202,55 @@ def create_chrome_driver(headless):
         return driver
 
 
-def create_firefox_driver(headless):
+def create_firefox_driver(profile):
     pass
-    if headless:
+    if HEADLESS:
         # Create a Firefox WebDriver instance in headless mode
-        FIREFOXPATH = '/Applications/Firefox.app/Contents/MacOS/firefox-bin'
+        # FIREFOXPATH = '/Applications/Firefox.app/Contents/MacOS/firefox-bin'
+        #
+        # # Create a Firefox WebDriver instance in headless mode
+        # options = webdriver.FirefoxOptions()
+        # options.binary = FIREFOXPATH
+        # options.add_argument('--headless')
+        #
+        # # You can edit firefox profiles in about:profiles
+        # options.set_preference('profile',
+        #                        "/Users/sabina.matjasic_new/Library/Application Support/Firefox/Profiles/t9vwtgiz.FirstUser")
+        #
+        # return webdriver.Firefox(options=options, log_path="geckodriver.log")
 
-        # Create a Firefox WebDriver instance in headless mode
-        options = webdriver.FirefoxOptions()
-        options.binary = FIREFOXPATH
-        options.add_argument('--headless')
-
-        # You can edit firefox profiles in about:profiles
-        options.set_preference('profile',
-                               "/Users/sabina.matjasic_new/Library/Application Support/Firefox/Profiles/t9vwtgiz.FirstUser")
-
-        return webdriver.Firefox(options=options, log_path="geckodriver.log")
+        options = Options()
+        options.headless = True  # Enable headless mode
+        driver = webdriver.Firefox(options=options)
+        return driver
 
     else:
         # Create the WebDriver instance
-        driver = webdriver.Firefox()
+        options = Options()
+        options.headless = False  # Run in headless mode if needed
+        driver = webdriver.Firefox(options=options)
         driver.set_window_position(-100, 0)
         driver.maximize_window()
         return driver
 
 
-def main():
-    date_from = '2023-02-07'
-    date_to = '2023-03-01'
-    number_of_hits = 1
-    file_data_path = "data/stock_info.txt"
-    headless = False
+DATE_FROM = '2023-02-07'
+DATE_TO = '2024-03-01'
+NUMBER_OF_HITS = 1
+FILE_DATA_PATH = "data/stock_info.txt"
+HEADLESS = False
 
+
+def main():
     # Only needed once to get SP500 data into CSV file
     # get_SP500_data()
 
-    driver = create_firefox_driver(headless)
+    profile = ["/Users/sabina.matjasic_new/Library/Application Support/Firefox/Profiles/t9vwtgiz.FirstUser"]
+
+    driver = create_firefox_driver(profile)
     # driver = create_chrome_driver(headless)
-    create_file_if_not_exists(file_data_path)
-    get_all_data(date_from, date_to, number_of_hits, file_data_path, driver)
+    create_file_if_not_exists(FILE_DATA_PATH)
+    get_all_data(driver)
     driver.quit()
 
 

@@ -33,7 +33,7 @@ class YahooFinanceScraper:
     def get_article_title(self):
         try:
             title = self.wait.until(
-                EC.presence_of_element_located((By.CSS_SELECTOR, "h1[data-test-locator='headline']")))
+                EC.presence_of_element_located((By.CSS_SELECTOR, ".cover-title.yf-1at0uqp")))
             return title.text
         except Exception as e:
             print(f"Error: {e}")
@@ -42,7 +42,7 @@ class YahooFinanceScraper:
     def get_article_text(self):
         try:
             article_body = self.wait.until(
-                EC.presence_of_element_located((By.CSS_SELECTOR, "div.caas-body")))
+                EC.presence_of_element_located((By.CSS_SELECTOR, ".body.yf-tsvcyu")))
             return article_body.text
         except Exception as e:
             print(f"Error: {e}")
